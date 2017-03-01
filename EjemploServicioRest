@@ -1,0 +1,297 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servicioWeb;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dominio.Equipo;
+import dominio.Jugador;
+import dominio.Usuario;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import org.json.JSONObject;
+import persistencia.EquipoFacadeLocal;
+import persistencia.JugadorFacadeLocal;
+import persistencia.UsuarioFacadeLocal;
+
+/**
+ * REST Web Service
+ * Permite añadir jugadores al sistema, añadir jugadores a un equipo, eliminar
+ * jugadores de un equipo y obtener los jugadores disponibles.
+ * @author Alberto Laguna Humayor, Pablo Martin Villares.
+ */
+@Path("generic")
+public class ServicioWeb {
+
+	EquipoFacadeLocal equipoFacade = lookupEquipoFacadeLocal();
+
+	UsuarioFacadeLocal usuarioFacade = lookupUsuarioFacadeLocal();
+
+	JugadorFacadeLocal jugadorFacade = lookupJugadorFacadeLocal();
+
+
+	/**
+	 * Creates a new instance of servicioWeb
+	 */
+	public ServicioWeb() {
+	}
+
+	/**
+	 * Operacion GET 
+	 * Obtiene todos los jugadores del sistema que no pertenecen a ningun entrenador.
+	 * @return una instacia de la clase Response con 
+	 * todos los jugadores del sistema menos los que no estan disponibles.
+	 */
+	@GET
+        @Produces(MediaType.TEXT_PLAIN)
+	public Response getJugadores() {
+		ResponseBuilder respuesta=Response.status(Response.Status.ACCEPTED);
+		respuesta.type("text/plain");
+
+		String jugadoresString="[";
+		List<Jugador> jugadores=jugadorFacade.findAll();
+		List<Equipo> equipos=equipoFacade.findAll();
+		//Hay que quitar los jugadores que pertenezcan a un entrenador.
+		for(int i=0;i<jugadores.size();i++){
+			boolean bandera=true;//Sirve para solo obtenr los jugadores libres.
+			int j=0;
+			int idJugador2=jugadores.get(i).getId();
+			while(j<equipos.size()&&bandera){
+				if(equipos.get(j).getJugId().getId()==idJugador2)
+					bandera=false;
+				j++;
+			}
+			if(bandera){//Lo creamos en formato json para luego poder usarlo mas facilmente.
+				JSONObject nuevo=new JSONObject();
+				nuevo.put("name", jugadores.get(i).getName());
+				nuevo.put("id",jugadores.get(i).getId());
+				jugadoresString+=nuevo.toString();
+				jugadoresString+=",\n";
+				}
+		}
+		jugadoresString+="]";
+		respuesta.entity(jugadoresString);
+		return respuesta.build();
+	}
+
+	/**
+	 * POST method for updating or creating an instance of ServicioWeb
+	 * Añade un jugador al sistema.
+	 * @param content es el jugador que se va añadir.
+	 * @return la respeusta de que se creo correctamente; y si no es el caso
+	 * delvuelve una respuesta indicando que hubo un error.
+	 */
+	@POST
+        @Consumes(MediaType.TEXT_PLAIN)
+	public Response postJugador(String content) {
+		try{
+			Jugador jugador;
+			ObjectMapper mapper = new ObjectMapper();
+			jugador = mapper.readValue(content, Jugador.class);
+			List<Jugador> jugadores=jugadorFacade.findAll();
+			jugador.setId(jugadores.get(jugadores.size()-1).getId()+1);
+			jugadorFacade.create(jugador);
+			
+			ResponseBuilder respuesta=Response.status(Response.Status.CREATED);
+			return respuesta.build();	
+		}
+		catch(IOException e){
+			ResponseBuilder respuesta=Response.status(Response.Status.CONFLICT);
+			return respuesta.build();
+			
+		}
+	}
+
+	
+	/**
+	 * Operacion POST.
+	 * Se asigna un jugador a un entrenador. 
+	 * @param idJug la id del jugador que se va a añadir. Return Status.Conflict 
+	 * si no hay ningun jugador con esa id o si el jugador ya esta asignado a un entrenador.
+	 * @param idEntrenador  es la id del entrenador al que se le va añadir el
+	 * @return StatusCreated si se creo correctamente;
+	 * jugador. Return Status Conflict si no hay ningun usuario con ese id.
+	 */	
+	@POST
+	@Path("AddJugadorEquipo/{idEntrenador}")
+	@Consumes (MediaType.TEXT_PLAIN)	
+	public Response postAddJugadorEquipo(String idJug, @PathParam ("idEntrenador") String idEntrenador ){
+		ResponseBuilder respuesta=Response.status(Response.Status.CREATED);
+
+		//Se obtienen de la base de datos el jugador y entrenador
+		int idJugador=Integer.parseInt(idJug);
+		Jugador jugador=jugadorFacade.find(idJugador);
+		if(jugador==null){
+			respuesta=Response.status(Response.Status.CONFLICT);	
+			return respuesta.build();
+		}
+
+		Usuario entrenador=usuarioFacade.find(idEntrenador);
+		if(entrenador==null){
+			respuesta=Response.status(Response.Status.CONFLICT);	
+			return respuesta.build();
+		}
+
+
+		//Comprueba que el jugador no pertenece ya a un entrenador.
+		List<Equipo> equipos=equipoFacade.findAll();
+		for(int i=0;i<equipos.size();i++){
+			if(equipos.get(i).getJugId().getId()==idJugador){
+				respuesta=Response.status(Response.Status.CONFLICT);	
+				return respuesta.build();
+			}
+		}
+
+		//Añade el jugador al nuevo entrenador
+		
+		Equipo nuevo =new Equipo();
+		if(equipos.isEmpty())
+			nuevo.setId(1);
+		else
+			nuevo.setId(equipos.get(equipos.size()-1).getId()+1);
+			
+		nuevo.setJugId(jugador);
+		nuevo.setUsId(entrenador);
+		System.out.println(nuevo.getId()+" "+nuevo.getJugId().getId()+" "+nuevo.getUsId().getId());
+
+		equipoFacade.create(nuevo);
+		return respuesta.build();
+	}
+
+
+	/**
+	 * Operacion GET.
+	 * Obtiene los jugadores que pertencen a un entrenador. 
+	 * @param idEntrenador es el entrenador del que se quieren obtener los jugadores.
+	 * @return un String con los jugadores del entrenador pasado. 
+	 */
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)	
+	@Path("Equipo/{idEntrenador}")
+	public Response getEquipo(@PathParam("idEntrenador") String idEntrenador){
+		ResponseBuilder respuesta=Response.status(Response.Status.ACCEPTED);
+		respuesta.type("text/plain");
+		
+		List<Equipo> equipo=equipoFacade.findAll();
+		ArrayList<Equipo> equipoEntrenador=new ArrayList<>();
+
+		for(int i=0;i<equipo.size();i++){
+			if(equipo.get(i).getUsId().getId().equals(idEntrenador))
+				equipoEntrenador.add(equipo.get(i));
+		}
+
+		String jugadores="[";
+		for(int i=0;i<equipoEntrenador.size();i++){
+			JSONObject nuevo=new JSONObject();
+			nuevo.put("name", equipoEntrenador.get(i).getJugId().getName());
+			nuevo.put("id",equipoEntrenador.get(i).getJugId().getId());
+			jugadores+=nuevo.toString();
+			jugadores+=",\n";
+		}
+		jugadores+="]";
+		respuesta.entity(jugadores);
+		return respuesta.build();
+	}
+
+	/**
+	 * Operacion DELETE.
+	 * Elimina un jugador de el equipo de un entrenador.
+	 * Return Status.CONFLICT cuando el jugador no esta en el equipo del entrenador.
+	 * @param idJugador es el id del jugador.Return Status.CONFLICT
+	 * cuando no existe ningun jugador con ese id.
+	 * @param idEntrenador es el id del Entrenador. Return Status.CONFLICT 
+	 * cuando no existe ningun entrenador con esa id.
+	 * @return Response.Status.OK cuando se elimino correctamente el equipo 
+	 */	
+	@DELETE
+	@Path("{idJugador}/{idEntrenador}")
+	@Produces
+	public Response delete(@PathParam("idJugador")int idJugador, @PathParam("idEntrenador")String idEntrenador){
+		ResponseBuilder respuesta=Response.status(Response.Status.OK);
+
+		//Obtiene el jugador y el entrenador(usuario)
+		Jugador jugador=jugadorFacade.find(idJugador);
+		if(jugador==null){
+			respuesta=Response.status(Response.Status.CONFLICT);	
+			return respuesta.build();
+		}
+
+		Usuario entrenador=usuarioFacade.find(idEntrenador);
+		if(entrenador==null){
+			respuesta=Response.status(Response.Status.CONFLICT);	
+			return respuesta.build();
+		}
+
+		
+		List<Equipo> equipos=equipoFacade.findAll();
+		//Comprueba que el jugador se encuentra en el equipo del entrenador y lo elimina.	
+		boolean bandera=true;
+		int i=0;
+		while(i<equipos.size()&&bandera){
+			if(equipos.get(i).getJugId().getId()==idJugador&&equipos.get(i).getUsId().getId().equals(idEntrenador)){
+				Equipo borrar=new Equipo();
+				borrar.setId(equipos.get(i).getId());
+				borrar.setJugId(jugador);
+				borrar.setUsId(entrenador);
+				equipoFacade.remove(borrar);
+				bandera =false;
+				i=equipos.size();
+			}
+			i++;
+		}
+		if(bandera){
+			respuesta=Response.status(Response.Status.CONFLICT);	
+			return respuesta.build();
+		}
+		return respuesta.build();
+	}
+	
+
+	//Lookups necesarios para poder usar los facades
+	private JugadorFacadeLocal lookupJugadorFacadeLocal() {
+		try {
+			javax.naming.Context c = new InitialContext();
+			return (JugadorFacadeLocal) c.lookup("java:global/3Practica/3Practica-ejb/JugadorFacade!persistencia.JugadorFacadeLocal");
+		} catch (NamingException ne) {
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+			throw new RuntimeException(ne);
+		}
+	}
+
+	private UsuarioFacadeLocal lookupUsuarioFacadeLocal() {
+		try {
+			javax.naming.Context c = new InitialContext();
+			return (UsuarioFacadeLocal) c.lookup("java:global/3Practica/3Practica-ejb/UsuarioFacade!persistencia.UsuarioFacadeLocal");
+		} catch (NamingException ne) {
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+			throw new RuntimeException(ne);
+		}
+	}
+
+	private EquipoFacadeLocal lookupEquipoFacadeLocal() {
+		try {
+			javax.naming.Context c = new InitialContext();
+			return (EquipoFacadeLocal) c.lookup("java:global/3Practica/3Practica-ejb/EquipoFacade!persistencia.EquipoFacadeLocal");
+		} catch (NamingException ne) {
+			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+			throw new RuntimeException(ne);
+		}
+	}
+}
