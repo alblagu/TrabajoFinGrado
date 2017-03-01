@@ -1,1 +1,38 @@
 
+create table USUARIO
+(
+    DNI VARCHAR(15) not null,
+    PASSWORD VARCHAR(20) not null,
+    NOMBRE VARCHAR(30) not null,
+    APELLIDOS VARCHAR(50) not null,
+    TELEFONO INT not null,
+        PRIMARY KEY(DNI)
+);
+create table LIBRO
+(
+  NOMBRE VARCHAR(30) not null,
+  IDIOMA VARCHAR(30) not null,
+      PRIMARY KEY(NOMBRE)
+);
+
+create table EJEMPLAR
+(
+  CODIGO VARCHAR(30) not null,
+  LIBRO VARCHAR(30) not null,
+      PRIMARY KEY(CODIGO),
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(NOMBRE)
+);
+
+create table PRESTAMO
+(
+    ID INT not null,
+    USUARIO VARCHAR(15) not null,
+    EJEMPLAR VARCHAR(30) not null,
+    FECHA_INICIO DATE not null,
+    FECHA_FIN DATE not null,
+        PRIMARY KEY(ID),
+        FOREIGN KEY(USUARIO) REFERENCES USUARIO(DNI),
+        FOREIGN KEY(EJEMPLAR) REFERENCES EJEMPLAR(CODIGO)
+
+);
+
