@@ -1,0 +1,200 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package cliente;
+
+import java.util.Scanner;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import org.json.JSONArray;
+
+/**
+ * Clase que actua como cliente para poder probar el servicio web Rest.
+ * @author Alberto Laguna Humayor, Pablo Martin Villares.
+ */
+public class Main {
+
+	public static void main(String [] args){
+		while(true){
+			Cliente servicioWeb= new Cliente();
+
+			servicioWeb.postAddJugadorEquipo("1","primero");
+	
+			System.out.println("Comenzamos:");
+			Scanner in =new Scanner(System.in);
+			int entrada;
+
+			while(true){
+				System.out.println("Introduce 1 se eres administrador, 2,3 o 4 si eres entrenador");
+				entrada=in.nextInt();
+				if(entrada>0&&entrada<5)break;
+			}
+		
+			if(entrada==1)
+				administradorFuncionalidad(servicioWeb);
+			else{
+				//Si elijes 2 --> entrenador primero
+				//Si elijes 3 --> entrenador segundo 
+				//Si elijes 4 --> entrenador tercero 
+				String idEntrenador="";
+				if(entrada==2)idEntrenador="primero";
+				if(entrada==3)idEntrenador="segundo";
+				if(entrada==4)idEntrenador="tercero";
+				entrenadorFuncionalidad(servicioWeb,idEntrenador);	
+			}
+		
+			while(true){
+			System.out.println("¿Quieres hacer más cosas? 1 si, 2 no");
+			entrada=in.nextInt();
+			if(entrada==1||entrada==2)break;
+			}
+			if(entrada==2)break;
+		}
+	}
+
+	/**
+	 * Te permite añadir nuevos jugadores al sistema.
+	 * @param servicioWeb  es el objeto que te permite usar el servicioWeb.
+	 */
+	private static void administradorFuncionalidad(Cliente servicioWeb) {
+		int entrada;
+		Scanner in=new Scanner(System.in);
+		Client client =ClientBuilder.newClient();
+		WebTarget webTarget =client.target("http://api.football-data.org/v1/competitions");
+		
+		//1ºPaso mostrar las competiciones y elegir una.
+		String competicionesString= webTarget.request().get(String.class);
+		JSONArray competiciones= new JSONArray(competicionesString);
+
+		System.out.println("Competiciones:");
+		for(int i=0;i<competiciones.length();i++){
+			System.out.println(i+" "+competiciones.getJSONObject(i).get("caption"));
+		}
+		
+		while(true){
+			System.out.println("Introduce el numero asociado a liga que quieres elegir");
+			entrada=in.nextInt();
+			if(entrada>=0&&entrada<competiciones.length())break;
+		}
+
+		
+		//2º Paso Mostrar equipos y elegir uno
+		webTarget =client.target("http://api.football-data.org/v1/competitions/"+competiciones.getJSONObject(entrada).getInt("id")+"/teams");
+
+		String equiposString=webTarget.request().get(String.class);
+		int posicion=equiposString.indexOf("[");
+		equiposString=equiposString.substring(posicion,equiposString.length());
+		JSONArray equipos=new JSONArray(equiposString);
+		System.out.println("Equipos::::");
+		for(int i=0;i<equipos.length();i++){
+			System.out.println(i+": "+equipos.getJSONObject(i).getString("name"));
+		}
+			
+		while(true){
+			System.out.println("Introduce el numero asociado al equipo que quieres elegir");
+			entrada=in.nextInt();
+			if(entrada>=0&&entrada<equipos.length())break;
+		}
+
+
+		//3º Paso Mostrar Jugadores
+		webTarget =client.target(equipos.getJSONObject(entrada).getJSONObject("_links").getJSONObject("players").getString("href"));
+		String jugadoresString=webTarget.request().get(String.class);
+		posicion=jugadoresString.indexOf("[");
+		jugadoresString=jugadoresString.substring(posicion,jugadoresString.length());
+		JSONArray jugadores=new JSONArray(jugadoresString);
+		System.out.println("Jugadores:::");
+		for(int i=0;i<jugadores.length();i++){
+			System.out.println(i+": "+jugadores.getJSONObject(i).getString("name"));
+		}
+		
+		while(true){
+			System.out.println("Quieres añadir estos jugadores a la base de datos? --> 1 si ; 2 no");
+			entrada=in.nextInt();
+			if(entrada==1||entrada==2)break;
+		}
+		if(entrada==1){
+			for(int i=0;i<jugadores.length();i++){
+				Response respuesta=servicioWeb.postJugador(jugadores.getJSONObject(i).toString());
+				if(respuesta.getStatus()==Response.Status.CONFLICT.getStatusCode())System.out.println("ERROR--> el jugador:"+jugadores.getJSONObject(i).getString("name")+" no se creo en la base de datos");//Muestra mensaje de error cuando no se creo un futbolista; pero continua.
+			}
+		}
+		else{
+			
+		}	
+		while(true){
+			System.out.println("Quieres añadir mas jugadores a la base de datos? --> 1 si ; 2 no");
+			entrada=in.nextInt();
+			if(entrada==1||entrada==2)break;
+			
+		}
+		if(entrada==1){
+			administradorFuncionalidad(servicioWeb);
+		}
+	}
+
+	/**
+	 *  Permite añadir o eliminar jugadores a al equipo del entrenador identificado.
+	 * @param servicioWeb es el objeto que permite utilizar el servicio web.
+	 * @param idEntrenador es la id del entrenador identificado.
+	 */
+	private static void entrenadorFuncionalidad(Cliente servicioWeb, String idEntrenador) {
+		int entrada;
+		Scanner in =new Scanner(System.in);
+		while(true){
+			System.out.println("Quieres añadir o eliminar jugadores? 1 para añadir; 2 para eliminaro");
+			entrada=in.nextInt();
+			if(entrada==1||entrada==2)break;
+		}
+		if(entrada==1){  //AÑADIR JUGADOR
+				//Obtienes un string lo conviertes en un JSONArray con los jugadores libres 
+				//Elijes uno de los jugadores y es añadido a tu equipo
+			Response jugadores=servicioWeb.getJugadores();
+			JSONArray jugadoresLibres=new JSONArray(jugadores.readEntity(String.class));
+			System.out.println("Estos son los jugadores libres::::");
+			for(int i=0;i<jugadoresLibres.length();i++){
+				System.out.println(i+" :"+jugadoresLibres.getJSONObject(i).get("name"));
+			}
+			while(true&&jugadoresLibres.length()>0){
+				System.out.println("Elije el jugadores que quieres añadir: (introduciendo su id)");
+				entrada=in.nextInt();
+				if(entrada>=0&&entrada<jugadoresLibres.length()){
+					Response respuesta=servicioWeb.postAddJugadorEquipo(jugadoresLibres.getJSONObject(entrada).getInt("id"), idEntrenador);
+					if(respuesta.getStatus()==Response.Status.CONFLICT.getStatusCode())throw new IllegalArgumentException("Error al crear el jugador");
+					break;
+				}
+			}
+			
+			
+		}
+		else{ 	//ELIMINARJUGADOR EQUIIPO
+			//Obtienes un string --> lo conviertes a JSONArray
+			//De los jugadores que se muestran elijes uno y se elimina(en caso de que hay jugadores)
+			Response jugadores=servicioWeb.getEquipo(idEntrenador);
+			JSONArray jugadoresEquipo=new JSONArray(jugadores.readEntity(String.class));
+			for(int i=0;i<jugadoresEquipo.length();i++){
+				System.out.println(i+": "+jugadoresEquipo.getJSONObject(i).getString("name"));
+			}
+			while(true&&jugadoresEquipo.length()>0){
+				System.out.println("Cual quieres eliminar introduce su id");
+				entrada=in.nextInt();
+				if(entrada>=0&&entrada<jugadoresEquipo.length()){
+					Response respuesta=servicioWeb.delete(String.valueOf(jugadoresEquipo.getJSONObject(entrada).getInt("id")), idEntrenador);
+					if(respuesta.getStatus()==Response.Status.CONFLICT.getStatusCode())throw new IllegalArgumentException("El equipo no se elimino correctamente");
+					break;
+				}
+			}
+		}
+
+		while(true){
+			System.out.println("Quieres añadir o eliminar mas jugadores? 1 si , 2 no");
+			entrada=in.nextInt();
+			if(entrada==1||entrada==2)break;
+		}
+		if(entrada==1)entrenadorFuncionalidad(servicioWeb,idEntrenador);
+	}
+}
