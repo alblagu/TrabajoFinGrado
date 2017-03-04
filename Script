@@ -9,7 +9,8 @@ create table USUARIO
 );
 create table LIBRO
 (
-  ISBN VARCHAR(30) not null,
+  ISBN10 VARCHAR(30) not null,
+  ISBN13 VARCHAR(30) not null,
   NOMBRE VARCHAR(30) not null,
       PRIMARY KEY(ISBN)
 );
@@ -35,5 +36,5 @@ create table PRESTAMO
 
 );
 
-INSERT INTO LIBRO VALUES ('1', 'blancanieves' );
-INSERT INTO LIBRO VALUES ('2', 'elLibro de Ulises');
+INSERT INTO LIBRO VALUES ('1','2','blancanieves' );
+INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises');
