@@ -1,4 +1,3 @@
-
 create table USUARIO
 (
     DNI VARCHAR(15) not null,
@@ -10,9 +9,9 @@ create table USUARIO
 );
 create table LIBRO
 (
+  ISBN VARCHAR(30) not null,
   NOMBRE VARCHAR(30) not null,
-  IDIOMA VARCHAR(30) not null,
-      PRIMARY KEY(NOMBRE)
+      PRIMARY KEY(ISBN)
 );
 
 create table EJEMPLAR
@@ -20,7 +19,7 @@ create table EJEMPLAR
   CODIGO VARCHAR(30) not null,
   LIBRO VARCHAR(30) not null,
       PRIMARY KEY(CODIGO),
-      FOREIGN KEY(LIBRO) REFERENCES LIBRO(NOMBRE)
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN)
 );
 
 create table PRESTAMO
@@ -36,3 +35,5 @@ create table PRESTAMO
 
 );
 
+INSERT INTO LIBRO VALUES ('1', 'blancanieves' );
+INSERT INTO LIBRO VALUES ('2', 'elLibro de Ulises');
