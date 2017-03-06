@@ -5,15 +5,9 @@ create table USUARIO
     NOMBRE VARCHAR(30) not null,
     APELLIDOS VARCHAR(50) not null,
     TELEFONO INT not null,
-        PRIMARY KEY(DNI)create table USUARIO
-(
-    DNI VARCHAR(15) not null,
-    PASSWORD VARCHAR(20) not null,
-    NOMBRE VARCHAR(30) not null,
-    APELLIDOS VARCHAR(50) not null,
-    TELEFONO INT not null,
         PRIMARY KEY(DNI)
 );
+
 create table LIBRO
 (
   ISBN10 VARCHAR(30) not null,
@@ -44,39 +38,9 @@ create table PRESTAMO
 
 );
 
-INSERT INTO LIBRO VALUES ('1','2','blancanieves' );
-INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises');
-
-);
-create table LIBRO
-(
-  ISBN10 VARCHAR(30) not null,
-  ISBN13 VARCHAR(30) not null,
-  NOMBRE VARCHAR(30) not null,
-      PRIMARY KEY(ISBN),
-      UNIQUE I_ISBN13(ISBN31)
-);
-
-create table EJEMPLAR
-(
-  CODIGO VARCHAR(30) not null,
-  LIBRO VARCHAR(30) not null,
-      PRIMARY KEY(CODIGO),
-      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN)
-);
-
-create table PRESTAMO
-(
-    ID INT not null,
-    USUARIO VARCHAR(15) not null,
-    EJEMPLAR VARCHAR(30) not null,
-    FECHA_INICIO DATE not null,
-    FECHA_FIN DATE not null,
-        PRIMARY KEY(ID),
-        FOREIGN KEY(USUARIO) REFERENCES USUARIO(DNI),
-        FOREIGN KEY(EJEMPLAR) REFERENCES EJEMPLAR(CODIGO)
-
-);
 
 INSERT INTO LIBRO VALUES ('1','2','blancanieves' );
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises');
+INSERT INTO EJEMPLAR VALUES ('wdqdwq','1');
+INSERT INTO PRESTAMO VALUES (1,'122','1','2017-1-2','2011-2-2');
+INSERT INTO USUARIO VALUES ('122','22','2','1',1);
