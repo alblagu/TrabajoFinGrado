@@ -12,7 +12,7 @@ create table LIBRO
 (
   ISBN10 VARCHAR(30) not null,
   ISBN13 VARCHAR(30) not null,
-  NOMBRE VARCHAR(30) not null,
+  TITULO VARCHAR(100) not null,
       PRIMARY KEY(ISBN10),
       UNIQUE (ISBN13)
 );
