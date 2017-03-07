@@ -13,7 +13,7 @@ create table LIBRO
   ISBN10 VARCHAR(30) not null,
   ISBN13 VARCHAR(30) not null,
   TITULO VARCHAR(100) not null,
-  URLFOTO VARCHAR(100) not null,
+  URLFOTO VARCHAR(300) not null,
       PRIMARY KEY(ISBN10),
       UNIQUE (ISBN13)
 );
@@ -38,8 +38,8 @@ create table PRESTAMO
         FOREIGN KEY(EJEMPLAR) REFERENCES EJEMPLAR(CODIGO)
 );
 
-INSERT INTO LIBRO VALUES ('1','2','blancanieves' );
-INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises');
+INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
+INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO EJEMPLAR VALUES ('1','2');
 INSERT INTO USUARIO VALUES ('122','22','2','1',1);
 INSERT INTO PRESTAMO VALUES (1,'122','1','2017-1-2','2011-2-2');
