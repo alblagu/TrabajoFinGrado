@@ -13,6 +13,7 @@ create table LIBRO
   ISBN10 VARCHAR(30) not null,
   ISBN13 VARCHAR(30) not null,
   TITULO VARCHAR(100) not null,
+  URLFOTO VARCHAR(100) not null,
       PRIMARY KEY(ISBN10),
       UNIQUE (ISBN13)
 );
@@ -35,10 +36,7 @@ create table PRESTAMO
         PRIMARY KEY(ID),
         FOREIGN KEY(USUARIO) REFERENCES USUARIO(DNI),
         FOREIGN KEY(EJEMPLAR) REFERENCES EJEMPLAR(CODIGO)
-
 );
-
-
 
 INSERT INTO LIBRO VALUES ('1','2','blancanieves' );
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises');
