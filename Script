@@ -31,6 +31,7 @@ create table PRESTAMO
     ID INT not null,
     USUARIO VARCHAR(15) not null,
     EJEMPLAR VARCHAR(30) not null,
+    ESTADO VARCHAR(30) not null,
     FECHA_INI DATE not null,
     FECHA_FIN DATE not null,
         PRIMARY KEY(ID),
@@ -42,4 +43,6 @@ INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO EJEMPLAR VALUES ('1','2');
 INSERT INTO USUARIO VALUES ('122','22','2','1',1);
-INSERT INTO PRESTAMO VALUES (1,'122','1','2017-1-2','2011-2-2');
+INSERT INTO PRESTAMO VALUES (1,'122','1','enCurso','2017-1-2','2011-2-2');
+INSERT INTO PRESTAMO VALUES (2,'122','1','enCurso','2017-1-2','2011-2-2');
+INSERT INTO PRESTAMO VALUES (3,'122','1','finalizado','2017-1-2','2011-2-2');
