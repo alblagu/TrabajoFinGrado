@@ -4,6 +4,7 @@ create table USUARIO
     PASSWORD VARCHAR(20) not null,
     NOMBRE VARCHAR(30) not null,
     APELLIDOS VARCHAR(50) not null,
+    ADMINISTRADOR BOOLEAN not null,
     TELEFONO INT not null,
         PRIMARY KEY(DNI)
 );
@@ -43,7 +44,7 @@ create table PRESTAMO
 INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO EJEMPLAR VALUES ('1','2','libre');
-INSERT INTO USUARIO VALUES ('122','22','2','1',1);
+INSERT INTO USUARIO VALUES ('122','22','2','1',true,1);
 INSERT INTO PRESTAMO VALUES (1,'122','1','enCurso','2017-1-2','2011-2-2');
 INSERT INTO PRESTAMO VALUES (2,'122','1','enCurso','2017-1-2','2011-2-2');
 INSERT INTO PRESTAMO VALUES (3,'122','1','finalizado','2017-1-2','2011-2-2');
