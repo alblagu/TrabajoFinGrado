@@ -33,7 +33,7 @@ create table PRESTAMO
     ID INT not null,
     USUARIO VARCHAR(15) not null,
     EJEMPLAR VARCHAR(30) not null,
-    ESTADO VARCHAR(30) not null,
+    ESTADO BOOLEAN not null,
     FECHA_INI DATE not null,
     FECHA_FIN DATE not null,
         PRIMARY KEY(ID),
