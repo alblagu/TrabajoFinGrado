@@ -39,6 +39,19 @@ create table PRESTAMO
         FOREIGN KEY(USUARIO) REFERENCES USUARIO(DNI),
         FOREIGN KEY(EJEMPLAR) REFERENCES EJEMPLAR(CODIGO)
 );
+create table CATEGORIA
+ NOMBRE VARCHAR(100) not null,
+    PRIMARY KEY(NOMBRE)
+(
+
+);
+create table CATEGORIA_LIBRO
+(
+ CATEGORIA VARCHAR(100) not null,
+ LIBRO VARCHAR(30) not null,
+      FOREIGN KEY(CATEGORIA) REFERENCES CATEGORIA(NOMBRE),  
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN10)
+);
 
 INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
