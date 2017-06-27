@@ -53,10 +53,26 @@ create table CATEGORIA_LIBRO
       FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN10)
 );
 
+create table AUTOR
+(
+ NOMBRE VARCHAR(9999) not null,
+    PRIMARY KEY(NOMBRE)
+);
+create table AUTOR_LIBRO
+(
+ AUTOR VARCHAR(9999) not null,
+ LIBRO VARCHAR(30) not null,
+     PRIMARY KEY(CATEGORIA,LIBRO),
+      FOREIGN KEY(CATEGORIA) REFERENCES AUTOR(NOMBRE),  
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN10)
+);
+
+NOMBRE VARCHAR(99
+
 INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO EJEMPLAR VALUES ('1','2',true);
-INSERT INTO USUARIO VALUES ('122','','alberto laguna humayor','true',1);
+INSERT INTO USUARIO VALUES ('122','356a192b7913b04c54574d18c28d46e6395428ab','alberto laguna humayor','true',1);
 INSERT INTO PRESTAMO VALUES (1,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (2,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (3,'122','1','false','2017-1-2','2017-2-2');
