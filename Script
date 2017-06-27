@@ -1,8 +1,8 @@
 create table USUARIO
 (
-    DNI VARCHAR(15) not null,
-    PASSWORD VARCHAR(20) not null,
-    NOMBRE VARCHAR(100) not null,
+    DNI VARCHAR(9999) not null,
+    PASSWORD VARCHAR(9999) not null,
+    NOMBRE VARCHAR(9999) not null,
     ADMINISTRADOR BOOLEAN not null,
     TELEFONO INT not null,
         PRIMARY KEY(DNI)
@@ -12,15 +12,15 @@ create table LIBRO
 (
   ISBN10 VARCHAR(30) not null,
   ISBN13 VARCHAR(30) not null,
-  TITULO VARCHAR(100) not null,
-  URLFOTO VARCHAR(300) not null,
+  TITULO VARCHAR(9999) not null,
+  URLFOTO VARCHAR(9999) not null,
       PRIMARY KEY(ISBN10),
       UNIQUE (ISBN13)
 );
 
 create table EJEMPLAR
 (
-  CODIGO VARCHAR(30) not null,
+  CODIGO VARCHAR(9999) not null,
   LIBRO VARCHAR(30) not null,
   DISPONIBLE BOOLEAN not null,
       PRIMARY KEY(CODIGO),
@@ -30,8 +30,8 @@ create table EJEMPLAR
 create table PRESTAMO
 (
     ID INT not null,
-    USUARIO VARCHAR(15) not null,
-    EJEMPLAR VARCHAR(30) not null,
+    USUARIO VARCHAR(9999) not null,
+    EJEMPLAR VARCHAR(9999) not null,
     ENCURSO BOOLEAN not null,
     FECHA_INI DATE not null,
     FECHA_FIN DATE not null,
@@ -41,12 +41,12 @@ create table PRESTAMO
 );
 create table CATEGORIA
 (
- NOMBRE VARCHAR(100) not null,
+ NOMBRE VARCHAR(9999) not null,
     PRIMARY KEY(NOMBRE)
 );
 create table CATEGORIA_LIBRO
 (
- CATEGORIA VARCHAR(100) not null,
+ CATEGORIA VARCHAR(9999) not null,
  LIBRO VARCHAR(30) not null,
      PRIMARY KEY(CATEGORIA,LIBRO),
       FOREIGN KEY(CATEGORIA) REFERENCES CATEGORIA(NOMBRE),  
@@ -56,7 +56,7 @@ create table CATEGORIA_LIBRO
 INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO EJEMPLAR VALUES ('1','2',true);
-INSERT INTO USUARIO VALUES ('122','1','alberto laguna humayor','true',1);
+INSERT INTO USUARIO VALUES ('122','','alberto laguna humayor','true',1);
 INSERT INTO PRESTAMO VALUES (1,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (2,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (3,'122','1','false','2017-1-2','2017-2-2');
