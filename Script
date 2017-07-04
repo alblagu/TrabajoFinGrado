@@ -3,7 +3,7 @@ create table USUARIO
     DNI VARCHAR(9999) not null,
     PASSWORD VARCHAR(9999) not null,
     NOMBRE VARCHAR(9999) not null,
-    ADMINISTRADOR BOOLEAN not null,
+    TIPOUSUARIO VARCHAR(9999) not null;
     TELEFONO INT not null,
         PRIMARY KEY(DNI)
 );
