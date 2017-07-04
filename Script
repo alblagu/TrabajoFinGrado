@@ -10,21 +10,23 @@ create table USUARIO
 
 create table LIBRO
 (
-  ISBN10 VARCHAR(30) not null,
-  ISBN13 VARCHAR(30) not null,
+  ID INTEGER not null,
+  ISBN10 VARCHAR(30) ,
+  ISBN13 VARCHAR(30) ,
   TITULO VARCHAR(9999) not null,
   URLFOTO VARCHAR(9999) not null,
-      PRIMARY KEY(ISBN10),
+      PRIMARY KEY(ID),
       UNIQUE (ISBN13)
 );
 
 create table EJEMPLAR
 (
   CODIGO VARCHAR(9999) not null,
-  LIBRO VARCHAR(30) not null,
+  LIBRO INTEGER not null,
+  LOCALIZACION VARCHAR(9999) not null,
   DISPONIBLE BOOLEAN not null,
       PRIMARY KEY(CODIGO),
-      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN10)
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ID)
 );
 
 create table PRESTAMO
@@ -47,10 +49,10 @@ create table CATEGORIA
 create table CATEGORIA_LIBRO
 (
  CATEGORIA VARCHAR(9999) not null,
- LIBRO VARCHAR(30) not null,
+LIBRO INTEGER not null,
      PRIMARY KEY(CATEGORIA,LIBRO),
       FOREIGN KEY(CATEGORIA) REFERENCES CATEGORIA(NOMBRE),  
-      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN10)
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ID)
 );
 
 create table AUTOR
@@ -61,16 +63,16 @@ create table AUTOR
 create table AUTOR_LIBRO
 (
  AUTOR VARCHAR(9999) not null,
- LIBRO VARCHAR(30) not null,
+ LIBRO INTEGER not null,
      PRIMARY KEY(AUTOR,LIBRO),
       FOREIGN KEY(AUTOR) REFERENCES AUTOR(NOMBRE),  
-      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ISBN10)
+      FOREIGN KEY(LIBRO) REFERENCES LIBRO(ID)
 );
 
 
-INSERT INTO LIBRO VALUES ('1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
-INSERT INTO LIBRO VALUES ('2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
-INSERT INTO EJEMPLAR VALUES ('1','2',true);
+INSERT INTO LIBRO VALUES (1,'1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
+INSERT INTO LIBRO VALUES (2,'2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
+INSERT INTO EJEMPLAR VALUES ('1',1,'colina a' ,true);
 INSERT INTO USUARIO VALUES ('122','356a192b7913b04c54574d18c28d46e6395428ab','alberto laguna humayor','true',1);
 INSERT INTO PRESTAMO VALUES (1,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (2,'122','1','true','2017-1-2','2017-2-2');
