@@ -73,7 +73,7 @@ create table AUTOR_LIBRO
 INSERT INTO LIBRO VALUES (1,'1','2','blancanieves','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO LIBRO VALUES (2,'2','3', 'elLibro de Ulises','https://books.google.com/books/content?id=j6JmAAAACAAJ&printsec=frontcover&img=1&zoom=5&source=gbs_api');
 INSERT INTO EJEMPLAR VALUES ('1',1,'colina a' ,true);
-INSERT INTO USUARIO VALUES ('122','356a192b7913b04c54574d18c28d46e6395428ab','alberto laguna humayor','true',1,'email@gmail.com');
+INSERT INTO USUARIO VALUES ('122','356a192b7913b04c54574d18c28d46e6395428ab','alberto laguna humayor','ADMIN',1,'email@gmail.com');
 INSERT INTO PRESTAMO VALUES (1,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (2,'122','1','true','2017-1-2','2017-2-2');
 INSERT INTO PRESTAMO VALUES (3,'122','1','false','2017-1-2','2017-2-2');
