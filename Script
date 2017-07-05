@@ -16,7 +16,7 @@ create table LIBRO
   ISBN13 VARCHAR(30) ,
   TITULO VARCHAR(9999) not null,
   URLFOTO VARCHAR(9999) not null,
-      PRIMARY KEY(ID),
+      PRIMARY KEY(ID)
 );
 
 create table EJEMPLAR
